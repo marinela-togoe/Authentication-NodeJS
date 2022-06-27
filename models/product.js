@@ -1,45 +1,48 @@
-const fs =  require('fs');
-const utils = require('../util/path');
+const fs = require('fs');
 const path = require('path');
-const p = path.join(utils, 'data', 'products.json');
 
-function getProductsFromFile() {
-  return new Promise((resolve, reject) => {
-    fs.readFile(p, 'utf-8', (err, data) => {
-      if (err) {
-        fs.mkdir('data', () => {
-          const data = '';
-          fs.writeFileSync(p, data);
-          resolve([]);
-        });
-      } else if (data === '') {
-        resolve([]);
-      } else resolve(JSON.parse(data));
-    });
+const p = path.join(
+  path.dirname(process.mainModule.filename),
+  'data',
+  'products.json'
+);
+
+const getProductsFromFile = cb => {
+  fs.readFile(p, (err, fileContent) => {
+    if (err) {
+      cb([]);
+    } else {
+      cb(JSON.parse(fileContent));
+    }
   });
-}
+};
 
-class Product {
-  constructor(title, imageUrl, price, description) {
+module.exports = class Product {
+  constructor(title, imageUrl, description, price) {
     this.title = title;
     this.imageUrl = imageUrl;
-    this.price = price;
     this.description = description;
+    this.price = price;
   }
 
-  async save() {
+  save() {
     this.id = Math.random().toString();
-    const products = await getProductsFromFile();
-    products.push(this);
-    fs.writeFile(p, JSON.stringify(products), (err, data) => {
-      if (err) console.log(err, data);
+    getProductsFromFile(products => {
+      products.push(this);
+      fs.writeFile(p, JSON.stringify(products), err => {
+        console.log(err);
+      });
     });
   }
-  static async fetchAll() {
-    return await getProductsFromFile();
+
+  static fetchAll(cb) {
+    getProductsFromFile(cb);
   }
-}
 
-module.exports = Product;
-
- 
+  static findById(id, cb) {
+    getProductsFromFile(products => {
+      const product = products.find(p => p.id === id);
+      cb(product);
+    });
+  }
+};
