@@ -12,6 +12,12 @@ async function getProducts(req, res, next) {
   });
 };
 
+function getProduct(req, res, next) {
+  const prodId = req.params.productId;
+  console.log(prodId);
+  res.redirect('/');
+}
+
 async function getIndex(req, res, next) {
   const products = await Product.fetchAll();
   res.render('shop/index', {
@@ -49,6 +55,7 @@ function getCheckout(req, res, next) {
 
 module.exports = {
   getProducts,
+  getProduct,
   getIndex,
   getCart,
   getOrders,
