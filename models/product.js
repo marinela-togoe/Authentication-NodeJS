@@ -28,6 +28,7 @@ class Product {
   }
 
   async save() {
+    this.id = Math.random().toString();
     const products = await getProductsFromFile();
     products.push(this);
     fs.writeFile(p, JSON.stringify(products), (err, data) => {
