@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 const errorController = require('./controllers/error');
-// const User = require('./models/user');
+const User = require('./models/user');
 
 const app = express();
 
@@ -18,19 +18,14 @@ const shopRoutes = require('./routes/shop');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use((req, res, next) => {
-//   User.findById('62c330fd1d217b5307f53c81')
-//     .then(user => {
-//       req.user = new User(
-//         user.name, 
-//         user.email, 
-//         user.cart, 
-//         user._id
-//       );
-//       next();
-//     })
-//     .catch(err => console.log(err));
-// });
+app.use((req, res, next) => {
+  User.findById('62c85aaea17e7e6de249f7fe')
+    .then(user => {
+      req.user = user;
+      next();
+    })
+    .catch(err => console.log(err));
+});
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
@@ -42,6 +37,19 @@ mongoose
 .connect(
   'mongodb+srv://marinela:ObQTp8q68yAdP0qq@cluster0.udspa.mongodb.net/shop?retryWrites=true&w=majority')
 .then(result => {
+  User.findOne().then(user => {
+    if (!user) {
+
+      const user = new User({
+        name: 'Mari',
+        email: 'mari@test.com',
+        cart: {
+          items: []
+        }
+      });
+      user.save();
+    }
+  });
   app.listen(3000);
 })
 .catch(err => {
