@@ -13,7 +13,11 @@ const userSchema = new Schema({
    },
    cart: {
         items: [
-            { productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true }, 
+            { productId: {
+                 type: Schema.Types.ObjectId, 
+                 ref: 'Product', 
+                 required: true 
+                }, 
         
             quantity: { type: Number, required: true } 
             }
@@ -54,7 +58,7 @@ userSchema.methods.removeFromCart = function(productId) {
 }
 
 userSchema.methods.clearCart = function() {
-    this.cart = {items: []};
+    this.cart = { items: [] };
     return this.save();
 }
 
