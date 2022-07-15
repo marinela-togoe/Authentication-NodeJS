@@ -3,6 +3,8 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+// const cookieParser = require('cookie-parser');
+const session = require('express-session');
 
 const errorController = require('./controllers/error');
 const User = require('./models/user');
@@ -18,6 +20,11 @@ const authRoutes = require('./routes/auth');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+// app.use(cookieParser());
+app.use(
+  session({ secret: 'my secret', resave: false, saveUninitialized: false })
+);
+
 
 app.use((req, res, next) => {
   User.findById('62c85aaea17e7e6de249f7fe')
@@ -33,6 +40,8 @@ app.use(shopRoutes);
 app.use(authRoutes);
 
 app.use(errorController.get404);
+
+
 
 
 mongoose
